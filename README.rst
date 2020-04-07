@@ -16,6 +16,8 @@
 .. _black-badge: https://github.com/psf/black
 .. |changelog-badge| image:: https://img.shields.io/badge/-change%20log-purple
 .. _changelog-badge: https://github.com/akaihola/darker/blob/master/CHANGES.rst
+.. |gitpod-badge| image:: https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod
+.. _gitpod-badge: https://github.com/akaihola/darker
 
 What?
 =====
