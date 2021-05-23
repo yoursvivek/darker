@@ -10,6 +10,8 @@ Fixed
 -----
 - Git-related commands in the test suite now ignore the user's ``~/.gitconfig``.
 - Now works again even if ``isort`` isn't installed
+- Ensure identical Black formatting on Unix and Windows by always passing Unix newlines
+  to Black
 
 
 1.2.3_ - 2021-05-02
