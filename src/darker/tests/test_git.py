@@ -3,6 +3,7 @@
 # pylint: disable=redefined-outer-name
 
 import os
+from datetime import datetime, timedelta
 from pathlib import Path
 from subprocess import CalledProcessError, check_call
 from typing import List, Union
@@ -10,6 +11,7 @@ from unittest.mock import patch
 
 import pytest
 
+from darker import git
 from darker.git import (
     COMMIT_RANGE_RE,
     WORKTREE,
@@ -22,7 +24,7 @@ from darker.git import (
 )
 from darker.tests.conftest import GitRepoFixture
 from darker.tests.helpers import raises_or_matches
-from darker.utils import TextDocument
+from darker.utils import GIT_DATEFORMAT, TextDocument
 
 
 @pytest.mark.parametrize(
@@ -54,16 +56,27 @@ def test_worktree_symbol():
     assert WORKTREE == ":WORKTREE:"
 
 
+def test_git_get_mtime_at_commit():
+    """darker.git.git_get_mtime_at_commit()"""
+    with patch.object(git, "_git_check_output_lines") as _git_check_output_lines:
+        _git_check_output_lines.return_value = ["1609104839"]
+
+        result = git.git_get_mtime_at_commit(
+            Path("dummy path"), "dummy revision", Path("dummy cwd")
+        )
+        assert result == "2020-12-27 21:33:59.000000 +0000"
+
+
 @pytest.mark.parametrize(
-    "revision, expect",
+    "revision, expect_content, expect_mtime",
     [
-        (":WORKTREE:", ("new content",)),
-        ("HEAD", ("modified content",)),
-        ("HEAD^", ("original content",)),
-        ("HEAD~2", ()),
+        (":WORKTREE:", ("new content",), True),
+        ("HEAD", ("modified content",), True),
+        ("HEAD^", ("original content",), True),
+        ("HEAD~2", (), False),
     ],
 )
-def test_git_get_content_at_revision(git_repo, revision, expect):
+def test_git_get_content_at_revision(git_repo, revision, expect_content, expect_mtime):
     """darker.git.git_get_content_at_revision()"""
     git_repo.add({"my.txt": "original content"}, commit="Initial commit")
     paths = git_repo.add({"my.txt": "modified content"}, commit="Initial commit")
@@ -73,7 +86,14 @@ def test_git_get_content_at_revision(git_repo, revision, expect):
         Path("my.txt"), revision, cwd=Path(git_repo.root)
     )
 
-    assert original.lines == expect
+    assert original.lines == expect_content
+    if expect_mtime:
+        mtime_then = datetime.strptime(original.mtime, GIT_DATEFORMAT)
+        mtime_now = datetime.utcfromtimestamp(paths["my.txt"].stat().st_mtime)
+        difference = mtime_now - mtime_then
+        assert timedelta(0) <= difference < timedelta(seconds=2)
+    else:
+        assert original.mtime == ""
 
 
 @pytest.mark.parametrize(
