@@ -5,6 +5,7 @@ These features will be included in the next release:
 
 Added
 -----
+- ``darker --diff`` output is now identical to that of ``black --diff``
 
 Fixed
 -----
