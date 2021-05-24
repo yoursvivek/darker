@@ -46,11 +46,7 @@ from darker.tests.helpers import raises_if_exception
         ("", b"ORIGINAL=1\n", ["+1M0", "+2-1", "+2M1-0", "+2M1"]),
         ("", b"MODIFIED=1\n", ["+1", "+2-1", "+2", "+2M1-0"]),
         ("HEAD", b"USERMOD=1\n", ["+1", "+1M0", "+2-1", "+2", "+2M1-0", "+2M1"]),
-        (
-            "HEAD",
-            b"ORIGINAL=1\n",
-            ["+1M0", "+2-1", "+2M1-0", "+2M1"],
-        ),
+        ("HEAD", b"ORIGINAL=1\n", ["+1M0", "+2-1", "+2M1-0", "+2M1"]),
         ("HEAD", b"MODIFIED=1\n", ["+1", "+2-1", "+2", "+2M1-0"]),
         ("HEAD^", b"USERMOD=1\n", ["+1", "+1M0", "+2-1", "+2", "+2M1-0", "+2M1"]),
         ("HEAD^", b"USERMOD=1\n", ["+1", "+1M0", "+2-1", "+2", "+2M1-0", "+2M1"]),
